@@ -1,0 +1,73 @@
+name: Terraform Deploy
+
+# Trigger strategy (decided earlier in this project):
+#   - push to main            -> auto-apply to the "dev" workspace, no approval gate
+#   - workflow_dispatch        -> manual apply to "test" or "prod", gated by
+#                                  GitHub Environment protection rules (required
+#                                  reviewer on "prod")
+on:
+  push:
+    branches: [main]
+    paths:
+      - "infra/**"
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: "Workspace to apply"
+        required: true
+        type: choice
+        options: [test, prod]
+
+# Required for GitHub to mint the OIDC token that AWS exchanges for
+# temporary credentials — without this, configure-aws-credentials fails.
+permissions:
+  id-token: write
+  contents: read
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    # Only manual runs (test/prod) go through a GitHub Environment, which is
+    # what makes the "required reviewer" approval gate on prod actually apply.
+    # Push-to-main (dev) runs with no environment, so it applies immediately.
+    environment: ${{ github.event_name == 'workflow_dispatch' && inputs.environment || '' }}
+
+    env:
+      TF_WORKSPACE: ${{ github.event_name == 'workflow_dispatch' && inputs.environment || 'dev' }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      # Exchanges the GitHub OIDC token for short-lived AWS credentials by
+      # assuming the role created by scripts/04_create_github_oidc_role.sh.
+      # No AWS access keys are stored anywhere in GitHub.
+      - name: Configure AWS credentials via OIDC
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ vars.AWS_ROLE_ARN }}
+          aws-region: ${{ vars.TF_STATE_BUCKET_REGION }}
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: "1.9.0" # keep in sync with your local Terraform version
+
+      # Backend bucket/region come from repo variables (set by
+      # 01_create_terraform_state_bucket.sh), not a committed .hcl file —
+      # same source scripts 02 and 03 use locally.
+      - name: Terraform Init
+        working-directory: infra
+        run: |
+          terraform init \
+            -backend-config="bucket=${{ vars.TF_STATE_BUCKET }}" \
+            -backend-config="region=${{ vars.TF_STATE_BUCKET_REGION }}"
+
+      - name: Select workspace
+        working-directory: infra
+        run: terraform workspace select "$TF_WORKSPACE"
+
+      - name: Terraform Apply
+        working-directory: infra
+        run: terraform apply -auto-approve
