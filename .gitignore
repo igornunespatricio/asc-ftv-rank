@@ -4,3 +4,5 @@ local/
 **/.terraform/*
 
 build/
+
+node_modules/

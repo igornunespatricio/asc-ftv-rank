@@ -10,6 +10,7 @@ on:
     branches: [main]
     paths:
       - "infra/**"
+      - "backend/**"
       - ".github/workflows/terraform.yml"
   workflow_dispatch:
     inputs:
@@ -40,6 +41,19 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+
+      # archive_file in lambda.tf zips whatever's on disk under backend/<fn>/ —
+      # it does NOT run npm install for us. Each Lambda directory needs its
+      # production node_modules present before Terraform packages the zip,
+      # or the function fails at cold start with "Cannot find module".
+      - name: Install Lambda dependencies
+        run: |
+          for dir in backend/*/; do
+            if [ -f "${dir}package.json" ]; then
+              echo "Installing dependencies in ${dir}..."
+              npm --prefix "${dir}" ci --omit=dev
+            fi
+          done
 
       # Exchanges the GitHub OIDC token for short-lived AWS credentials by
       # assuming the role created by scripts/04_create_github_oidc_role.sh.
