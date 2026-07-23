@@ -146,6 +146,7 @@ PERMISSIONS_POLICY=$(cat <<JSON
       "Action": [
         "ssm:PutParameter",
         "ssm:GetParameter",
+        "ssm:GetParameters",
         "ssm:DeleteParameter",
         "ssm:AddTagsToResource",
         "ssm:RemoveTagsFromResource",
