@@ -7,7 +7,7 @@ This file gives persistent context for AI-assisted development. Read this before
 - **Frontend:** React, hosted as a static build on **S3**, served via **CloudFront**.
 - **API:** **API Gateway (HTTP API)** + **AWS Lambda** (Node.js). No always-on server.
 - **Database:** **DynamoDB**, on-demand capacity mode. **Two separate tables**: `Users` and `Matches`. No single-table design.
-- **Auth:** JWT issued by a login Lambda, verified via a Lambda authorizer on admin-only routes. (Cognito is an open alternative — not yet decided.)
+- **Auth:** JWT issued by a login Lambda, verified via a Lambda authorizer on admin-only routes.
 - **IaC / CI:** Terraform + GitHub Actions. **Environments (`dev`, `test`, `prod`) are managed via Terraform workspaces**, not separate variables or directories. Resource names are derived from `terraform.workspace` (e.g. `footvolley-dev-users`, `footvolley-prod-matches`). Each workspace has isolated state, so `terraform apply` while on `dev` cannot touch `prod` resources. Always confirm the active workspace (`terraform workspace show`) before applying.
 - **Explicitly excluded:** EC2, RDS, ECS, Docker Compose for prod, anything relational/SQL.
 
@@ -66,11 +66,12 @@ Admin-only (Lambda authorizer required): `POST/PUT/DELETE /matches/:id`, `GET/PO
 
 ## Conventions
 
-- One Lambda per endpoint (or grouped by resource — decide once and stay consistent; don't mix patterns across `matches/` and `users/`).
+- - Lambdas grouped by resource: `matches/`, `users/`, `auth/`, plus a separate `authorizer/` Lambda for JWT verification. Don't mix per-endpoint and grouped patterns.
 - Ranking calculation logic lives in a shared, framework-agnostic module — not inlined in the Lambda handler — so it has direct unit tests.
 - Local dev emulates the serverless stack (SAM Local / LocalStack / `serverless-offline`) — no Docker Compose + Postgres.
 - Terraform provisions: S3 bucket + CloudFront distribution, API Gateway, Lambda functions, `Users` table, `Matches` table.
 - **Terraform workspaces** (`dev`, `test`, `prod`) drive environment naming via `local.environment = terraform.workspace`. A `check` block in `infra/locals.tf` fails plan/apply if the active workspace isn't one of the three. Never add an `environment` variable back in — workspace is the single source of truth.
+- `required_providers` / `required_version` live only in `versions.tf`; `providers.tf` holds backend config and provider configuration blocks only — don't duplicate or split provider requirements across both files.
 
 ## Resolved decisions (for reference)
 
@@ -79,6 +80,6 @@ Admin-only (Lambda authorizer required): `POST/PUT/DELETE /matches/:id`, `GET/PO
 
 ## Open decisions (flag if touched, don't silently assume)
 
-- JWT vs. Cognito for admin auth.
+- Exact `MatchDateIndex` partition strategy (constant key vs. month-bucket).
 - Pagination for matches table at scale.
 - Audit log for admin edits/deletes.

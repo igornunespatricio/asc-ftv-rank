@@ -13,5 +13,13 @@ terraform {
       # Before bumping this pin, re-check those issues for a confirmed fix,
       # and if bumping, re-verify with `terraform plan` on the Matches table.
     }
+    archive = {
+      source  = "hashicorp/archive"
+      version = "~> 2.4"
+    }
+    random = {
+      source  = "hashicorp/random"
+      version = "~> 3.6"
+    }
   }
 }

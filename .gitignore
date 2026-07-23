@@ -2,3 +2,5 @@ local/
 
 # Terraform working directory
 **/.terraform/*
+
+build/
