@@ -152,6 +152,12 @@ PERMISSIONS_POLICY=$(cat <<JSON
         "ssm:ListTagsForResource"
       ],
       "Resource": "arn:aws:ssm:*:${AWS_ACCOUNT_ID}:parameter/footvolley/*"
+    },
+    {
+      "Sid": "SsmDescribeParameters",
+      "Effect": "Allow",
+      "Action": "ssm:DescribeParameters",
+      "Resource": "*"
     }
   ]
 }
