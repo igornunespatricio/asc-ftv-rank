@@ -139,6 +139,19 @@ PERMISSIONS_POLICY=$(cat <<JSON
         "iam:ListRolePolicies", "iam:ListAttachedRolePolicies"
       ],
       "Resource": "*"
+    },
+    {
+      "Sid": "JwtSecretParameter",
+      "Effect": "Allow",
+      "Action": [
+        "ssm:PutParameter",
+        "ssm:GetParameter",
+        "ssm:DeleteParameter",
+        "ssm:AddTagsToResource",
+        "ssm:RemoveTagsFromResource",
+        "ssm:ListTagsForResource"
+      ],
+      "Resource": "arn:aws:ssm:*:${AWS_ACCOUNT_ID}:parameter/footvolley/*"
     }
   ]
 }
