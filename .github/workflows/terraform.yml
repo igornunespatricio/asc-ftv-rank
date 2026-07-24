@@ -11,6 +11,7 @@ on:
     paths:
       - "infra/**"
       - "backend/**"
+      - "tests/**"
       - ".github/workflows/terraform.yml"
   workflow_dispatch:
     inputs:

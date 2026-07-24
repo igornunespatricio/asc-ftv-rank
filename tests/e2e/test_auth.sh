@@ -18,7 +18,7 @@ set -euo pipefail
 #   ./06_test_auth_e2e.sh <dev|test|prod>
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-REPO_ROOT="$(cd "${SCRIPT_DIR}/.." && pwd)"
+REPO_ROOT="$(cd "${SCRIPT_DIR}/../.." && pwd)"
 INFRA_DIR="${REPO_ROOT}/infra"
 AUTH_DIR="${REPO_ROOT}/backend/auth"
 
