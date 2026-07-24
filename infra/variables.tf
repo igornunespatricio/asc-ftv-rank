@@ -9,3 +9,15 @@ variable "project_name" {
   type        = string
   default     = "footvolley"
 }
+
+variable "lambda_timeout" {
+  description = "Timeout (seconds) for all Lambda functions in this project."
+  type        = number
+  default     = 10
+}
+
+variable "lambda_memory_size" {
+  description = "Memory (MB) allocated to all Lambda functions in this project."
+  type        = number
+  default     = 256
+}

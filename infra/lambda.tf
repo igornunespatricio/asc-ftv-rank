@@ -182,6 +182,8 @@ resource "aws_lambda_function" "matches" {
   runtime          = "nodejs20.x"
   filename         = data.archive_file.matches.output_path
   source_code_hash = data.archive_file.matches.output_base64sha256
+  timeout          = var.lambda_timeout
+  memory_size      = var.lambda_memory_size
 
   environment {
     variables = {
@@ -198,6 +200,8 @@ resource "aws_lambda_function" "users" {
   runtime          = "nodejs20.x"
   filename         = data.archive_file.users.output_path
   source_code_hash = data.archive_file.users.output_base64sha256
+  timeout          = var.lambda_timeout
+  memory_size      = var.lambda_memory_size
 
   environment {
     variables = {
@@ -213,6 +217,8 @@ resource "aws_lambda_function" "auth" {
   runtime          = "nodejs20.x"
   filename         = data.archive_file.auth.output_path
   source_code_hash = data.archive_file.auth.output_base64sha256
+  timeout          = var.lambda_timeout
+  memory_size      = var.lambda_memory_size
 
   environment {
     variables = {
@@ -229,6 +235,8 @@ resource "aws_lambda_function" "authorizer" {
   runtime          = "nodejs20.x"
   filename         = data.archive_file.authorizer.output_path
   source_code_hash = data.archive_file.authorizer.output_base64sha256
+  timeout          = var.lambda_timeout
+  memory_size      = var.lambda_memory_size
 
   environment {
     variables = {
