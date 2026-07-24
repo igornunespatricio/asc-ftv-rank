@@ -116,9 +116,7 @@ check_status "request with non-admin token is denied" "${STATUS}" "^(401|403)$"
 
 echo
 echo "==> Case 4: valid signature, expired..."
-EXPIRED_TOKEN="$(sign_token true -- -10s)"
-# Note: "-10s" needs the -- separator above so node's arg parsing doesn't
-# treat it as a flag.
+EXPIRED_TOKEN="$(sign_token true "-10s")"
 STATUS="$(curl -s -o /dev/null -w "%{http_code}" "${API_URL}/users" \
   -H "Authorization: Bearer ${EXPIRED_TOKEN}")"
 check_status "request with expired token is denied" "${STATUS}" "^(401|403)$"
