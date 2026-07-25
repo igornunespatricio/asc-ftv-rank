@@ -216,7 +216,14 @@ async function deleteUser(id) {
 // -----------------------------------------------------------------------------
 exports.handler = async (event) => {
   const method = event.requestContext.http.method;
-  const path = event.requestContext.http.path;
+  const stage = event.requestContext.stage;
+  // HTTP API includes the stage name as a path prefix for any named stage
+  // (dev/test/prod), but NOT for $default. Strip it so route matching below
+  // is stage-independent.
+  let path = event.requestContext.http.path;
+  if (stage && stage !== "$default" && path.startsWith(`/${stage}`)) {
+    path = path.slice(stage.length + 1) || "/";
+  }
   const id = event.pathParameters?.id;
 
   let body = {};
