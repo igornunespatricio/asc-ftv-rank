@@ -6,3 +6,11 @@ local/
 build/
 
 node_modules/
+
+# Layer source code is committed even though it lives under a node_modules/
+# path — this is Lambda's required directory structure for layers, not an
+# installed dependency. Un-ignore level by level since git won't look inside
+# an already-ignored directory.
+!backend/layers/shared/nodejs/node_modules/
+!backend/layers/shared/nodejs/node_modules/shared/
+!backend/layers/shared/nodejs/node_modules/shared/**

@@ -10,6 +10,7 @@ const {
 } = require("@aws-sdk/lib-dynamodb");
 const bcrypt = require("bcryptjs");
 const { v4: uuidv4 } = require("uuid");
+const { normalizePath } = require("shared");
 
 const ddbClient = new DynamoDBClient({});
 const ddb = DynamoDBDocumentClient.from(ddbClient);
@@ -216,14 +217,7 @@ async function deleteUser(id) {
 // -----------------------------------------------------------------------------
 exports.handler = async (event) => {
   const method = event.requestContext.http.method;
-  const stage = event.requestContext.stage;
-  // HTTP API includes the stage name as a path prefix for any named stage
-  // (dev/test/prod), but NOT for $default. Strip it so route matching below
-  // is stage-independent.
-  let path = event.requestContext.http.path;
-  if (stage && stage !== "$default" && path.startsWith(`/${stage}`)) {
-    path = path.slice(stage.length + 1) || "/";
-  }
+  const path = normalizePath(event);
   const id = event.pathParameters?.id;
 
   let body = {};

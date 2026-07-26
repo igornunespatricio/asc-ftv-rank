@@ -184,6 +184,7 @@ resource "aws_lambda_function" "matches" {
   source_code_hash = data.archive_file.matches.output_base64sha256
   timeout          = var.lambda_timeout
   memory_size      = var.lambda_memory_size
+  layers           = [aws_lambda_layer_version.shared.arn]
 
   environment {
     variables = {
@@ -202,6 +203,7 @@ resource "aws_lambda_function" "users" {
   source_code_hash = data.archive_file.users.output_base64sha256
   timeout          = var.lambda_timeout
   memory_size      = var.lambda_memory_size
+  layers           = [aws_lambda_layer_version.shared.arn]
 
   environment {
     variables = {
@@ -243,4 +245,25 @@ resource "aws_lambda_function" "authorizer" {
       JWT_SECRET_PARAM = aws_ssm_parameter.jwt_secret.name
     }
   }
+}
+
+# -----------------------------------------------------------------------------
+# Shared Lambda layer
+# -----------------------------------------------------------------------------
+# Node.js layers must place code under nodejs/node_modules/<package-name>/ so
+# Lambda's runtime NODE_PATH (/opt/nodejs/node_modules) picks it up as a
+# normal `require("shared")` import — same resolution behavior as any other
+# npm package, just mounted from /opt instead of a local node_modules.
+# -----------------------------------------------------------------------------
+data "archive_file" "shared_layer" {
+  type        = "zip"
+  source_dir  = "${path.module}/../backend/layers/shared"
+  output_path = "${path.module}/../build/shared-layer.zip"
+}
+
+resource "aws_lambda_layer_version" "shared" {
+  layer_name          = "${var.project_name}-${local.environment}-shared"
+  filename            = data.archive_file.shared_layer.output_path
+  source_code_hash    = data.archive_file.shared_layer.output_base64sha256
+  compatible_runtimes = ["nodejs20.x"]
 }
