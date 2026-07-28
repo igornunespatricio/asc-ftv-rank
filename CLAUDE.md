@@ -87,6 +87,5 @@ Admin-only (Lambda authorizer required): `POST/PUT/DELETE /matches/:id`, `GET/PO
 
 ## Open decisions (flag if touched, don't silently assume)
 
-- Exact `MatchDateIndex` partition strategy (constant key vs. month-bucket).
 - Pagination for matches table at scale.
 - Audit log for admin edits/deletes.

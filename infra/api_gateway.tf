@@ -6,7 +6,7 @@ resource "aws_apigatewayv2_api" "main" {
   protocol_type = "HTTP"
 
   cors_configuration {
-    allow_origins = ["*"] # tighten to the CloudFront domain once it exists
+    allow_origins = ["https://${aws_cloudfront_distribution.frontend.domain_name}"]
     allow_methods = ["GET", "POST", "PUT", "DELETE", "OPTIONS"]
     allow_headers = ["Content-Type", "Authorization"]
   }

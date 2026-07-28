@@ -1,0 +1,50 @@
+@import "tailwindcss";
+
+/*
+  Design direction: "scoreboard on sand."
+  Footvolley is played on a sand court with painted chalk boundary lines.
+  Rankings are numbers that matter, so the numerals get scoreboard weight
+  (Bebas Neue, tabular mono for stats) instead of being just another table.
+*/
+
+@theme {
+  --font-display: "Bebas Neue", "Arial Narrow", sans-serif;
+  --font-body: "Inter", system-ui, sans-serif;
+  --font-mono: "IBM Plex Mono", ui-monospace, monospace;
+
+  --color-sand: #ede4d3;
+  --color-chalk: #faf7f0;
+  --color-ink: #16283d;
+  --color-net: #1b4b66;
+  --color-matchpoint: #e8402c;
+  --color-wetsand: #b8a888;
+}
+
+body {
+  background-color: var(--color-sand);
+  color: var(--color-ink);
+  font-family: var(--font-body);
+}
+
+.font-display {
+  font-family: var(--font-display);
+  letter-spacing: 0.02em;
+}
+
+.font-mono-nums {
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
+}
+
+/* Court-line divider: a dashed rule evoking sand-court boundary paint */
+.court-line {
+  border-bottom: 1.5px dashed var(--color-wetsand);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
