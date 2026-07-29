@@ -8,7 +8,7 @@ const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 if (!API_BASE_URL) {
   // Fail loudly at dev-server start rather than silently hitting "undefined/matches".
   console.error(
-    "VITE_API_BASE_URL is not set. Copy .env.example to .env and set it to your API Gateway invoke URL."
+    "VITE_API_BASE_URL is not set. Copy .env.example to .env and set it to your API Gateway invoke URL.",
   );
 }
 
@@ -58,10 +58,9 @@ export const api = {
   // Public
   login: (email, password) =>
     request("/auth/login", { method: "POST", body: { email, password } }),
-  getMatches: (params = {}) =>
-    request(`/matches${toQuery(params)}`),
+  getMatches: (params = {}) => request(`/matches${toQuery(params)}`),
   getRanking: (params = {}) =>
-    request(`/ranking${toQuery(params)}`),
+    request(`/ranking${toQuery(params)}`).then((data) => data.ranking),
   getActivePlayers: () => request("/players/active"),
 
   // Admin (require token)
@@ -81,7 +80,9 @@ export const api = {
 };
 
 function toQuery(params) {
-  const entries = Object.entries(params).filter(([, v]) => v !== undefined && v !== "");
+  const entries = Object.entries(params).filter(
+    ([, v]) => v !== undefined && v !== "",
+  );
   if (entries.length === 0) return "";
   return `?${new URLSearchParams(entries).toString()}`;
 }
