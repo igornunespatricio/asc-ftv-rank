@@ -56,7 +56,7 @@ export default function Ranking() {
     return [...rows].sort((a, b) => b[sortKey] - a[sortKey]);
   }, [rows, sortKey]);
 
-  const rangeLabel = `${new Date(range.from).toLocaleDateString()} - ${new Date(range.to).toLocaleDateString()}`;
+  const rangeLabel = `${range.from.split("-").reverse().join("/")} - ${range.to.split("-").reverse().join("/")}`;
 
   return (
     <div className="mx-auto max-w-5xl px-4 py-8">
