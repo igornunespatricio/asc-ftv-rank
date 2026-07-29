@@ -23,18 +23,28 @@ export default function Ranking() {
   const [betOnly, setBetOnly] = useState(false);
   const [rows, setRows] = useState(null);
   const [error, setError] = useState(null);
-  const range = useMemo(() => currentMonthRange(), []);
+  const [range, setRange] = useState(currentMonthRange());
 
   useEffect(() => {
     let cancelled = false;
     setError(null);
+    api;
     api
-      .getRanking({ from: range.from, to: range.to, has_bet: betOnly ? true : undefined })
+      .getRanking({
+        start: range.from,
+        end: range.to,
+        bet: betOnly ? true : undefined,
+      })
       .then((data) => {
         if (!cancelled) setRows(data);
       })
       .catch((err) => {
-        if (!cancelled) setError(err instanceof ApiError ? err.message : "Couldn't load the ranking.");
+        if (!cancelled)
+          setError(
+            err instanceof ApiError
+              ? err.message
+              : "Couldn't load the ranking.",
+          );
       });
     return () => {
       cancelled = true;
@@ -46,17 +56,14 @@ export default function Ranking() {
     return [...rows].sort((a, b) => b[sortKey] - a[sortKey]);
   }, [rows, sortKey]);
 
-  const monthLabel = new Date(range.from).toLocaleDateString(undefined, {
-    month: "long",
-    year: "numeric",
-  });
+  const rangeLabel = `${new Date(range.from).toLocaleDateString()} - ${new Date(range.to).toLocaleDateString()}`;
 
   return (
     <div className="mx-auto max-w-5xl px-4 py-8">
       <div className="flex flex-wrap items-end justify-between gap-4 court-line pb-4 mb-6">
         <div>
           <p className="font-mono-nums text-xs uppercase tracking-widest text-net">
-            {monthLabel}
+            {rangeLabel}
           </p>
           <h1 className="font-display text-5xl text-ink">Ranking</h1>
         </div>
@@ -68,7 +75,9 @@ export default function Ranking() {
                 key={s.key}
                 onClick={() => setSortKey(s.key)}
                 className={`font-display text-sm tracking-wide px-3 py-1.5 ${
-                  sortKey === s.key ? "bg-ink text-chalk" : "text-ink hover:bg-ink/10"
+                  sortKey === s.key
+                    ? "bg-ink text-chalk"
+                    : "text-ink hover:bg-ink/10"
                 }`}
               >
                 {s.label}
@@ -85,6 +94,17 @@ export default function Ranking() {
             />
             Bet matches only
           </label>
+
+          <input
+            type="date"
+            value={range.from}
+            onChange={(e) => setRange((r) => ({ ...r, from: e.target.value }))}
+          />
+          <input
+            type="date"
+            value={range.to}
+            onChange={(e) => setRange((r) => ({ ...r, to: e.target.value }))}
+          />
         </div>
       </div>
 
@@ -100,8 +120,9 @@ export default function Ranking() {
 
       {!error && sorted && sorted.length === 0 && (
         <p className="rounded border border-dashed border-wetsand px-4 py-8 text-center text-net">
-          No matches recorded for {monthLabel} yet
-          {betOnly ? " with bets on the line" : ""}. Once matches are logged, standings show up here.
+          No matches recorded for {rangeLabel} yet
+          {betOnly ? " with bets on the line" : ""}. Once matches are logged,
+          standings show up here.
         </p>
       )}
 
@@ -129,7 +150,9 @@ export default function Ranking() {
                 <span className="font-mono-nums text-xs text-wetsand">
                   {player.wins}W&ndash;{player.losses}L &middot;{" "}
                   {(player.win_pct * 100).toFixed(0)}% win
-                  {player.bet_matches ? ` · ${player.bet_wins}/${player.bet_matches} bets` : ""}
+                  {player.bet_matches
+                    ? ` · ${player.bet_wins}/${player.bet_matches} bets`
+                    : ""}
                 </span>
               </span>
 
