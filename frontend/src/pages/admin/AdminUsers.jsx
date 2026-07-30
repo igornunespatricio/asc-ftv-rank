@@ -79,8 +79,12 @@ export default function AdminUsers() {
     e.preventDefault();
     setFormError(null);
 
-    if (!form.name.trim() || !form.email.trim()) {
-      setFormError("Name and email are required.");
+    if (!form.name.trim()) {
+      setFormError("Name is required.");
+      return;
+    }
+    if (form.is_admin && !form.email.trim()) {
+      setFormError("Email is required for admin users.");
       return;
     }
     if (form.is_admin && !isEditing && !form.password) {
@@ -90,9 +94,12 @@ export default function AdminUsers() {
 
     const payload = {
       name: form.name.trim(),
-      email: form.email.trim(),
       status: form.status,
       is_admin: form.is_admin,
+      // Only admins have an email (per the users Lambda — createUser/updateUser
+      // never set email or password_hash on non-admin records), same reasoning
+      // as the conditional password field below.
+      ...(form.is_admin ? { email: form.email.trim() } : {}),
       // Blank password on edit means "leave unchanged" — omit it rather
       // than sending an empty string the backend would hash as-is.
       ...(form.password ? { password: form.password } : {}),
@@ -141,19 +148,21 @@ export default function AdminUsers() {
             />
           </label>
 
-          <label className="flex flex-col gap-1 flex-1 min-w-[160px]">
-            <span className="font-display text-sm tracking-wide text-net">
-              Email
-            </span>
-            <input
-              type="email"
-              value={form.email}
-              onChange={(e) =>
-                setForm((f) => ({ ...f, email: e.target.value }))
-              }
-              className="rounded border border-ink/30 bg-white px-3 py-2 text-ink focus:outline-none focus:ring-2 focus:ring-net"
-            />
-          </label>
+          {form.is_admin && (
+            <label className="flex flex-col gap-1 flex-1 min-w-[160px]">
+              <span className="font-display text-sm tracking-wide text-net">
+                Email
+              </span>
+              <input
+                type="email"
+                value={form.email}
+                onChange={(e) =>
+                  setForm((f) => ({ ...f, email: e.target.value }))
+                }
+                className="rounded border border-ink/30 bg-white px-3 py-2 text-ink focus:outline-none focus:ring-2 focus:ring-net"
+              />
+            </label>
+          )}
         </div>
 
         <div className="flex flex-wrap items-center gap-6">
