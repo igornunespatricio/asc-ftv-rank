@@ -130,7 +130,7 @@ export default function Ranking() {
         <ol className="flex flex-col gap-2">
           {sorted.map((player, i) => (
             <li
-              key={player.id}
+              key={player.player_id}
               className="flex items-center gap-4 rounded bg-chalk border border-ink/15 px-4 py-3"
             >
               <span
@@ -145,7 +145,7 @@ export default function Ranking() {
 
               <span className="flex-1 min-w-0">
                 <span className="block font-display text-xl text-ink truncate">
-                  {player.name}
+                  {player.player_name}
                 </span>
                 <span className="font-mono-nums text-xs text-wetsand">
                   {player.wins}W&ndash;{player.losses}L &middot;{" "}
