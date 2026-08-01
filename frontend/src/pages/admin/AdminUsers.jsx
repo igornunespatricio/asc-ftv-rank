@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useAuth } from "../../context/AuthContext";
 import { api, ApiError } from "../../api/client";
 
@@ -25,6 +25,7 @@ export default function AdminUsers() {
   const [form, setForm] = useState(EMPTY_FORM);
   const [formError, setFormError] = useState(null);
   const [saving, setSaving] = useState(false);
+  const formRef = useRef(null);
 
   const isEditing = form.id !== null;
 
@@ -55,6 +56,7 @@ export default function AdminUsers() {
       password: "",
     });
     setFormError(null);
+    formRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
   }
 
   function cancelEdit() {
@@ -125,9 +127,12 @@ export default function AdminUsers() {
 
   return (
     <div className="mx-auto max-w-5xl px-4 py-8">
-      <h1 className="font-display text-5xl text-ink mb-6">Manage Users</h1>
+      <h1 className="font-display text-4xl sm:text-5xl text-ink mb-6">
+        Manage Users
+      </h1>
 
       <form
+        ref={formRef}
         onSubmit={handleSubmit}
         className="mb-8 rounded border border-ink/15 bg-chalk p-4 flex flex-col gap-3"
       >
@@ -254,7 +259,7 @@ export default function AdminUsers() {
           {users.map((user) => (
             <li
               key={user.id}
-              className="flex items-center gap-4 rounded bg-chalk border border-ink/15 px-4 py-3"
+              className="flex flex-wrap items-center gap-3 rounded bg-chalk border border-ink/15 px-4 py-3"
             >
               <div className="flex-1 min-w-0">
                 <p className="font-display text-xl text-ink truncate">
@@ -284,13 +289,13 @@ export default function AdminUsers() {
               <div className="flex gap-2">
                 <button
                   onClick={() => startEdit(user)}
-                  className="font-display text-sm tracking-wide rounded border border-ink/30 text-ink px-3 py-1 hover:bg-ink/5"
+                  className="font-display text-sm tracking-wide rounded border border-ink/30 text-ink px-3 py-2 sm:py-1 hover:bg-ink/5"
                 >
                   Edit
                 </button>
                 <button
                   onClick={() => handleDelete(user)}
-                  className="font-display text-sm tracking-wide rounded border border-matchpoint text-matchpoint px-3 py-1 hover:bg-matchpoint/10"
+                  className="font-display text-sm tracking-wide rounded border border-matchpoint text-matchpoint px-3 py-2 sm:py-1 hover:bg-matchpoint/10"
                 >
                   Delete
                 </button>

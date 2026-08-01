@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useAuth } from "../../context/AuthContext";
 import { api, ApiError } from "../../api/client";
 
@@ -40,6 +40,7 @@ export default function AdminMatches() {
   const [form, setForm] = useState(EMPTY_FORM);
   const [formError, setFormError] = useState(null);
   const [saving, setSaving] = useState(false);
+  const formRef = useRef(null);
 
   const isEditing = form.id !== null;
 
@@ -103,6 +104,7 @@ export default function AdminMatches() {
       has_bet: Boolean(match.has_bet),
     });
     setFormError(null);
+    formRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
   }
 
   function cancelEdit() {
@@ -190,9 +192,12 @@ export default function AdminMatches() {
 
   return (
     <div className="mx-auto max-w-5xl px-4 py-8">
-      <h1 className="font-display text-5xl text-ink mb-6">Manage Matches</h1>
+      <h1 className="font-display text-4xl sm:text-5xl text-ink mb-6">
+        Manage Matches
+      </h1>
 
       <form
+        ref={formRef}
         onSubmit={handleSubmit}
         className="mb-8 rounded border border-ink/15 bg-chalk p-4 flex flex-col gap-3"
       >
@@ -352,38 +357,50 @@ export default function AdminMatches() {
           {matches.map((match) => (
             <li
               key={match.id}
-              className="flex flex-wrap items-center gap-4 rounded bg-chalk border border-ink/15 px-4 py-3"
+              className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4 rounded bg-chalk border border-ink/15 px-4 py-3"
             >
-              <span className="font-mono-nums text-xs text-wetsand w-24 shrink-0">
-                {match.match_date.split("-").reverse().join("/")}
-              </span>
+              {/* Row 1 on mobile: date + bet badge */}
+              <div className="flex items-center justify-between sm:contents">
+                <span className="font-mono-nums text-xs text-wetsand sm:w-24 sm:shrink-0">
+                  {match.match_date.split("-").reverse().join("/")}
+                </span>
+                {match.has_bet && (
+                  <span className="sm:hidden font-display text-xs tracking-wide px-2 py-1 rounded bg-matchpoint/10 text-matchpoint">
+                    Bet
+                  </span>
+                )}
+              </div>
 
-              <span className="flex-1 min-w-0 font-display text-lg text-ink truncate">
+              {/* Row 2 on mobile: full team names, wrapping instead of truncating */}
+              <span className="font-display text-base sm:text-lg text-ink leading-snug sm:flex-1 sm:min-w-0 sm:truncate">
                 {match.player1_team1_name} &amp; {match.player2_team1_name}
                 <span className="text-wetsand"> vs </span>
                 {match.player1_team2_name} &amp; {match.player2_team2_name}
               </span>
 
-              <span className="font-mono-nums text-xl text-net shrink-0">
-                {match.score_team1}&ndash;{match.score_team2}
-              </span>
-
-              {match.has_bet && (
-                <span className="font-display text-xs tracking-wide px-2 py-1 rounded bg-matchpoint/10 text-matchpoint shrink-0">
-                  Bet
+              {/* Row 3 on mobile: score + bet badge (desktop version) */}
+              <div className="flex items-center justify-between sm:contents">
+                <span className="font-mono-nums text-xl text-net sm:shrink-0">
+                  {match.score_team1}&ndash;{match.score_team2}
                 </span>
-              )}
+                {match.has_bet && (
+                  <span className="hidden sm:inline-flex font-display text-xs tracking-wide px-2 py-1 rounded bg-matchpoint/10 text-matchpoint shrink-0">
+                    Bet
+                  </span>
+                )}
+              </div>
 
-              <div className="flex gap-2 shrink-0">
+              {/* Row 4 on mobile: actions, full-width tap targets */}
+              <div className="flex gap-2 sm:shrink-0">
                 <button
                   onClick={() => startEdit(match)}
-                  className="font-display text-sm tracking-wide rounded border border-ink/30 text-ink px-3 py-1 hover:bg-ink/5"
+                  className="flex-1 sm:flex-none font-display text-sm tracking-wide rounded border border-ink/30 text-ink px-3 py-2 sm:py-1 hover:bg-ink/5"
                 >
                   Edit
                 </button>
                 <button
                   onClick={() => handleDelete(match)}
-                  className="font-display text-sm tracking-wide rounded border border-matchpoint text-matchpoint px-3 py-1 hover:bg-matchpoint/10"
+                  className="flex-1 sm:flex-none font-display text-sm tracking-wide rounded border border-matchpoint text-matchpoint px-3 py-2 sm:py-1 hover:bg-matchpoint/10"
                 >
                   Delete
                 </button>
