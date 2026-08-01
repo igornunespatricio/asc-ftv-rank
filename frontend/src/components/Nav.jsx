@@ -6,8 +6,15 @@ const linkClass = ({ isActive }) =>
     isActive ? "bg-ink text-chalk" : "text-ink hover:bg-ink/10"
   }`;
 
+const ENV_LABELS = {
+  dev: { label: "DEV", className: "bg-amber-400 text-ink" },
+  test: { label: "TEST", className: "bg-sky-400 text-ink" },
+};
+
 export default function Nav() {
   const { isAdmin, logout } = useAuth();
+  const env = import.meta.env.VITE_APP_ENV;
+  const badge = ENV_LABELS[env];
 
   return (
     <header className="border-b-2 border-ink bg-chalk">
@@ -16,6 +23,13 @@ export default function Nav() {
           <span className="font-display text-2xl text-ink">
             ASC FTV<span className="text-matchpoint">.</span>
           </span>
+          {badge && (
+            <span
+              className={`text-xs font-bold px-1.5 py-0.5 rounded ${badge.className}`}
+            >
+              {badge.label}
+            </span>
+          )}
         </NavLink>
 
         <nav className="flex items-center gap-1">
