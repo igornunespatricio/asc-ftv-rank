@@ -65,46 +65,55 @@ export default function Ranking() {
           <p className="font-mono-nums text-xs uppercase tracking-widest text-net">
             {rangeLabel}
           </p>
-          <h1 className="font-display text-5xl text-ink">Ranking</h1>
+          <h1 className="font-display text-4xl sm:text-5xl text-ink">
+            Ranking
+          </h1>
         </div>
 
-        <div className="flex items-center gap-4">
-          <div className="flex rounded border border-ink overflow-hidden">
-            {SORTS.map((s) => (
-              <button
-                key={s.key}
-                onClick={() => setSortKey(s.key)}
-                className={`font-display text-sm tracking-wide px-3 py-1.5 ${
-                  sortKey === s.key
-                    ? "bg-ink text-chalk"
-                    : "text-ink hover:bg-ink/10"
-                }`}
-              >
-                {s.label}
-              </button>
-            ))}
+        <div className="flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-4 w-full sm:w-auto">
+          <div className="flex items-center justify-between sm:justify-start gap-4">
+            <div className="flex rounded border border-ink overflow-hidden">
+              {SORTS.map((s) => (
+                <button
+                  key={s.key}
+                  onClick={() => setSortKey(s.key)}
+                  className={`font-display text-sm tracking-wide px-3 py-1.5 ${
+                    sortKey === s.key
+                      ? "bg-ink text-chalk"
+                      : "text-ink hover:bg-ink/10"
+                  }`}
+                >
+                  {s.label}
+                </button>
+              ))}
+            </div>
+
+            <label className="flex items-center gap-2 font-display text-sm tracking-wide text-ink">
+              <input
+                type="checkbox"
+                checked={betOnly}
+                onChange={(e) => setBetOnly(e.target.checked)}
+                className="h-4 w-4 accent-matchpoint"
+              />
+              Bet matches only
+            </label>
           </div>
-
-          <label className="flex items-center gap-2 font-display text-sm tracking-wide text-ink">
+          <div className="flex gap-2 w-full sm:w-auto">
             <input
-              type="checkbox"
-              checked={betOnly}
-              onChange={(e) => setBetOnly(e.target.checked)}
-              className="h-4 w-4 accent-matchpoint"
+              type="date"
+              value={range.from}
+              onChange={(e) =>
+                setRange((r) => ({ ...r, from: e.target.value }))
+              }
+              className="w-1/2 sm:w-auto"
             />
-            Bet matches only
-          </label>
-
-          <input
-            type="date"
-            value={range.from}
-            onChange={(e) => setRange((r) => ({ ...r, from: e.target.value }))}
-          />
-          <input
-            type="date"
-            value={range.to}
-            onChange={(e) => setRange((r) => ({ ...r, to: e.target.value }))}
-          />
+            <input
+              type="date"
+              value={range.to}
+              onChange={(e) => setRange((r) => ({ ...r, to: e.target.value }))}
+              className="w-1/2 sm:w-auto"
+            />
+          </div>
         </div>
       </div>
 

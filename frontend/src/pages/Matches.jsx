@@ -55,32 +55,37 @@ export default function Matches() {
           <h1 className="font-display text-5xl text-ink">Matches</h1>
         </div>
 
-        <div className="flex flex-wrap items-end gap-3">
-          <label className="flex flex-col gap-1">
-            <span className="font-display text-sm tracking-wide text-net">
-              From
-            </span>
-            <input
-              type="date"
-              value={range.start}
-              onChange={(e) =>
-                setRange((r) => ({ ...r, start: e.target.value }))
-              }
-              className="rounded border border-ink/30 bg-white px-3 py-2 text-ink focus:outline-none focus:ring-2 focus:ring-net"
-            />
-          </label>
-          <label className="flex flex-col gap-1">
-            <span className="font-display text-sm tracking-wide text-net">
-              To
-            </span>
-            <input
-              type="date"
-              value={range.end}
-              onChange={(e) => setRange((r) => ({ ...r, end: e.target.value }))}
-              className="rounded border border-ink/30 bg-white px-3 py-2 text-ink focus:outline-none focus:ring-2 focus:ring-net"
-            />
-          </label>
-          <label className="flex items-center gap-2 font-display text-sm tracking-wide text-ink pb-2">
+        <div className="flex flex-col sm:flex-row sm:flex-wrap sm:items-end gap-3 w-full sm:w-auto">
+          <div className="flex gap-3 w-full sm:w-auto">
+            <label className="flex flex-col gap-1 w-1/2 sm:w-auto">
+              <span className="font-display text-sm tracking-wide text-net">
+                From
+              </span>
+              <input
+                type="date"
+                value={range.start}
+                onChange={(e) =>
+                  setRange((r) => ({ ...r, start: e.target.value }))
+                }
+                className="rounded border border-ink/30 bg-white px-3 py-2 text-ink focus:outline-none focus:ring-2 focus:ring-net w-full"
+              />
+            </label>
+            <label className="flex flex-col gap-1 w-1/2 sm:w-auto">
+              <span className="font-display text-sm tracking-wide text-net">
+                To
+              </span>
+              <input
+                type="date"
+                value={range.end}
+                onChange={(e) =>
+                  setRange((r) => ({ ...r, end: e.target.value }))
+                }
+                className="rounded border border-ink/30 bg-white px-3 py-2 text-ink focus:outline-none focus:ring-2 focus:ring-net w-full"
+              />
+            </label>
+          </div>
+
+          <label className="flex items-center gap-2 font-display text-sm tracking-wide text-ink sm:pb-2">
             <input
               type="checkbox"
               checked={betOnly}
@@ -114,27 +119,38 @@ export default function Matches() {
           {matches.map((match) => (
             <li
               key={match.id}
-              className="flex flex-wrap items-center gap-4 rounded bg-chalk border border-ink/15 px-4 py-3"
+              className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4 rounded bg-chalk border border-ink/15 px-4 py-3"
             >
-              <span className="font-mono-nums text-xs text-wetsand w-24 shrink-0">
-                {match.match_date.split("-").reverse().join("/")}
-              </span>
+              {/* Row 1 on mobile: date + bet badge. On desktop, these rejoin the main row. */}
+              <div className="flex items-center justify-between sm:contents">
+                <span className="font-mono-nums text-xs text-wetsand sm:w-24 sm:shrink-0">
+                  {match.match_date.split("-").reverse().join("/")}
+                </span>
+                {match.has_bet && (
+                  <span className="sm:hidden font-display text-xs tracking-wide px-2 py-1 rounded bg-matchpoint/10 text-matchpoint">
+                    Bet
+                  </span>
+                )}
+              </div>
 
-              <span className="flex-1 min-w-0 font-display text-lg text-ink truncate">
+              {/* Row 2 on mobile: full team names, wrapping instead of truncating */}
+              <span className="font-display text-base sm:text-lg text-ink leading-snug sm:flex-1 sm:min-w-0 sm:truncate">
                 {match.player1_team1_name} &amp; {match.player2_team1_name}
                 <span className="text-wetsand"> vs </span>
                 {match.player1_team2_name} &amp; {match.player2_team2_name}
               </span>
 
-              <span className="font-mono-nums text-xl text-net shrink-0">
-                {match.score_team1}&ndash;{match.score_team2}
-              </span>
-
-              {match.has_bet && (
-                <span className="font-display text-xs tracking-wide px-2 py-1 rounded bg-matchpoint/10 text-matchpoint shrink-0">
-                  Bet
+              {/* Row 3 on mobile: score + bet badge (desktop version). */}
+              <div className="flex items-center justify-between sm:contents">
+                <span className="font-mono-nums text-xl text-net sm:shrink-0">
+                  {match.score_team1}&ndash;{match.score_team2}
                 </span>
-              )}
+                {match.has_bet && (
+                  <span className="hidden sm:inline-flex font-display text-xs tracking-wide px-2 py-1 rounded bg-matchpoint/10 text-matchpoint shrink-0">
+                    Bet
+                  </span>
+                )}
+              </div>
             </li>
           ))}
         </ul>
