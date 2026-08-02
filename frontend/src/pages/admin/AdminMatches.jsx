@@ -12,9 +12,13 @@ function currentMonthRange() {
   return { start: iso(from), end: iso(to) };
 }
 
+function today() {
+  return new Date().toISOString().slice(0, 10);
+}
+
 const EMPTY_FORM = {
   id: null,
-  match_date: "",
+  match_date: today(),
   player1_team1: "",
   player2_team1: "",
   player1_team2: "",
@@ -108,7 +112,7 @@ export default function AdminMatches() {
   }
 
   function cancelEdit() {
-    setForm(EMPTY_FORM);
+    setForm({ ...EMPTY_FORM, match_date: today() });
     setFormError(null);
   }
 
