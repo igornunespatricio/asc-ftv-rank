@@ -88,6 +88,7 @@ export default function AdminMatches() {
         known.add(id);
       }
     }
+    base.sort((a, b) => a.name.localeCompare(b.name));
     return base;
   }, [players, form]);
 
