@@ -253,28 +253,40 @@ export default function AdminMatches() {
             <span className="font-display text-sm tracking-wide text-net">
               Team 1 score
             </span>
-            <input
-              type="number"
+            <select
               value={form.score_team1}
               onChange={(e) =>
                 setForm((f) => ({ ...f, score_team1: e.target.value }))
               }
               className="rounded border border-ink/30 bg-white px-3 py-2 text-ink font-mono-nums focus:outline-none focus:ring-2 focus:ring-net"
-            />
+            >
+              <option value="">&mdash;</option>
+              {Array.from({ length: 31 }, (_, i) => (
+                <option key={i} value={i}>
+                  {i}
+                </option>
+              ))}
+            </select>
           </label>
 
           <label className="flex flex-col gap-1 w-24">
             <span className="font-display text-sm tracking-wide text-net">
               Team 2 score
             </span>
-            <input
-              type="number"
+            <select
               value={form.score_team2}
               onChange={(e) =>
                 setForm((f) => ({ ...f, score_team2: e.target.value }))
               }
               className="rounded border border-ink/30 bg-white px-3 py-2 text-ink font-mono-nums focus:outline-none focus:ring-2 focus:ring-net"
-            />
+            >
+              <option value="">&mdash;</option>
+              {Array.from({ length: 31 }, (_, i) => (
+                <option key={i} value={i}>
+                  {i}
+                </option>
+              ))}
+            </select>
           </label>
 
           <label className="flex items-center gap-2 font-display text-sm tracking-wide text-ink pb-2">
